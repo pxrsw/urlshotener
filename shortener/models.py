@@ -1,22 +1,19 @@
 import random
 import string
 from django.db import models
-
-def code_generator(size = 6, chars = string.ascii_lowercase + string.digits):
-	return ''.join(random.choice(chars) for _ in range(size))
-
+from .utils import code_generator, create_shortcode
 
 # Create your models here.
 class YektanetURL(models.Model):
 	url = models.CharField(max_length = 220,)
-	shortcode = models.CharField(max_length = 15, unique = True)
+	shortcode = models.CharField(max_length = 15, unique = True, blank = True)
 	timestamp = models.DateTimeField(auto_now_add = True)
 	update = models.DateTimeField(auto_now = True)
 	update = models.DateTimeField(auto_now_add = False, auto_now = False)
 
 	def save(self, *args, **kwargs):
-		print('test')
-		self.shortcode = code_generator()
+		if self.shortcode is None or self.shortcode =='':
+			self.shortcode = create_shortcode(self)
 		super(YektanetURL, self).save(*args, **kwargs)
 
 	def __str__(self):
